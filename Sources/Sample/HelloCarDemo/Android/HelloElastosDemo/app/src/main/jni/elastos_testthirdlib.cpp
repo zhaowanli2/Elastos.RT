@@ -22,7 +22,7 @@ static jstring JNICALL nativeGetHelloCarString(JNIEnv *env, jobject jobj)
 
     helloCarObj->Hello(&helloString);
 
-    String newString("[native] Hello, ");
+    String newString("[native ccccc] Hello, ");
     newString += helloString + "!";
 
     return env->NewStringUTF(newString.string());

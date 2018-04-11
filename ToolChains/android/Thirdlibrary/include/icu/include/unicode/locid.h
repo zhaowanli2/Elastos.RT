@@ -1,7 +1,9 @@
+// © 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html
 /*
 ******************************************************************************
 *
-*   Copyright (C) 1996-2013, International Business Machines
+*   Copyright (C) 1996-2015, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 *
 ******************************************************************************
@@ -31,10 +33,8 @@
 
 #include "unicode/utypes.h"
 #include "unicode/uobject.h"
-#include "unicode/unistr.h"
 #include "unicode/putil.h"
 #include "unicode/uloc.h"
-#include "unicode/strenum.h"
 
 /**
  * \file
@@ -45,6 +45,9 @@ U_NAMESPACE_BEGIN
 
 // Forward Declarations
 void U_CALLCONV locale_available_init(); /**< @internal */
+
+class StringEnumeration;
+class UnicodeString;
 
 /**
  * A <code>Locale</code> object represents a specific geographical, political,
@@ -85,7 +88,7 @@ void U_CALLCONV locale_available_init(); /**< @internal */
  * <P>
  * The third constructor requires a third argument--the <STRONG>Variant.</STRONG>
  * The Variant codes are vendor and browser-specific.
- * For example, use REVISED for a langauge's revised script orthography, and POSIX for POSIX.
+ * For example, use REVISED for a language's revised script orthography, and POSIX for POSIX.
  * Where there are two variants, separate them with an underscore, and
  * put the most important one first. For
  * example, a Traditional Spanish collation might be referenced, with
@@ -494,6 +497,21 @@ public:
     uint32_t        getLCID(void) const;
 
     /**
+     * Returns whether this locale's script is written right-to-left.
+     * If there is no script subtag, then the likely script is used, see uloc_addLikelySubtags().
+     * If no likely script is known, then FALSE is returned.
+     *
+     * A script is right-to-left according to the CLDR script metadata
+     * which corresponds to whether the script's letters have Bidi_Class=R or AL.
+     *
+     * Returns TRUE for "ar" and "en-Hebr", FALSE for "zh" and "fa-Cyrl".
+     *
+     * @return TRUE if the locale's script is written right-to-left
+     * @stable ICU 54
+     */
+    UBool isRightToLeft() const;
+
+    /**
      * Fills in "dispLang" with the name of this locale's language in a format suitable for
      * user display in the default locale.  For example, if the locale's language code is
      * "fr" and the default locale's language code is "en", this function would set
@@ -733,7 +751,7 @@ private:
     char fullNameBuffer[ULOC_FULLNAME_CAPACITY];
     // name without keywords
     char* baseName;
-    char baseNameBuffer[ULOC_FULLNAME_CAPACITY];
+    void initBaseName(UErrorCode& status);
 
     UBool fIsBogus;
 
@@ -778,7 +796,6 @@ Locale::getScript() const
 inline const char *
 Locale::getVariant() const
 {
-    getBaseName(); // lazy init
     return &baseName[variantBegin];
 }
 

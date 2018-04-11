@@ -22,7 +22,7 @@ if(ANDROID)
     # TODO: To be remove
     # Build from source or add 64-bits libraries
     add_library( icuuc SHARED IMPORTED GLOBAL )
-    set_target_properties( icuuc PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/../ToolChains/android/Thirdlibrary/lib/libicuuc.so )
+    set_target_properties( icuuc PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/../ToolChains/android/Thirdlibrary/lib/libicuuc.cr.so )
     add_library( crypto SHARED IMPORTED GLOBAL )
     set_target_properties( crypto PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/../ToolChains/android/Thirdlibrary/lib/libcrypto.so )
 endif()
