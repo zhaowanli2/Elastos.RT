@@ -166,7 +166,11 @@ ELAPI _CObject_UnmarshalInterface(
 #ifdef _ELASTOS64
         assert(0 && "64-bit cpu architecture does not support RPC.");
 #else
+#ifdef _android
         ECode ec = StdUnmarshalInterface(flag, NULL, (InterfacePack*)package, object);
+#else
+        ECode ec = StdUnmarshalInterface(flag, (InterfacePack*)package, object);
+#endif
         if (FAILED(ec)) {
             return ec;
         }
