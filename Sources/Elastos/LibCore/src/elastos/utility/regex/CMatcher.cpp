@@ -89,12 +89,13 @@ public:
             return;
         }
 
-        if (reset) {
-            mMatcher->reset(mUText);
-        }
-        else {
-            mMatcher->refreshInputText(mUText, mStatus);
-        }
+        assert(0 && "TODO");
+        // if (reset) {
+        //     mMatcher->reset(mUText);
+        // }
+        // else {
+        //     mMatcher->refreshInputText(mUText, mStatus);
+        // }
     }
 
     MatcherAccessor(
@@ -634,11 +635,13 @@ Boolean CMatcher::FindImpl(
     /* [in] */ ArrayOf<Int32>* offsets)
 {
     MatcherAccessor matcherAccessor(matcher, s, FALSE);
-    UBool result = matcherAccessor->find(startIndex, matcherAccessor.Status());
-    if (result) {
-        matcherAccessor.UpdateOffsets(offsets);
-    }
-    return result;
+    assert(0 && "TODO");
+    // UBool result = matcherAccessor->find(startIndex, matcherAccessor.Status());
+    // if (result) {
+    //     matcherAccessor.UpdateOffsets(offsets);
+    // }
+    // return result;
+    return FALSE;
 }
 
 Boolean CMatcher::FindNextImpl(
@@ -650,25 +653,31 @@ Boolean CMatcher::FindNextImpl(
     if (matcherAccessor.Status() != U_ZERO_ERROR) {
         return -1;
     }
-    UBool result = matcherAccessor->find();
-    if (result) {
-        matcherAccessor.UpdateOffsets(offsets);
-    }
-    return result;
+    assert(0 && "TODO");
+    // UBool result = matcherAccessor->find();
+    // if (result) {
+    //     matcherAccessor.UpdateOffsets(offsets);
+    // }
+    // return result;
+    return FALSE;
 }
 
 Int32 CMatcher::GroupCountImpl(
     /* [in] */ RegexMatcher* matcher)
 {
-    MatcherAccessor matcherAccessor(matcher);
-    return matcherAccessor->groupCount();
+    assert(0 && "TODO");
+    // MatcherAccessor matcherAccessor(matcher);
+    // return matcherAccessor->groupCount();
+    return 0;
 }
 
 Boolean CMatcher::HitEndImpl(
     /* [in] */ RegexMatcher* matcher)
 {
-    MatcherAccessor matcherAccessor(matcher);
-    return matcherAccessor->hitEnd();
+    assert(0 && "TODO");
+    // MatcherAccessor matcherAccessor(matcher);
+    // return matcherAccessor->hitEnd();
+    return FALSE;
 }
 
 Boolean CMatcher::LookingAtImpl(
@@ -676,12 +685,14 @@ Boolean CMatcher::LookingAtImpl(
     /* [in] */ const String& s,
     /* [in] */ ArrayOf<Int32>* offsets)
 {
-    MatcherAccessor matcherAccessor(matcher, s, FALSE);
-    UBool result = matcherAccessor->lookingAt(matcherAccessor.Status());
-    if (result) {
-        matcherAccessor.UpdateOffsets(offsets);
-    }
-    return result;
+    assert(0 && "TODO");
+    // MatcherAccessor matcherAccessor(matcher, s, FALSE);
+    // UBool result = matcherAccessor->lookingAt(matcherAccessor.Status());
+    // if (result) {
+    //     matcherAccessor.UpdateOffsets(offsets);
+    // }
+    // return result;
+    return FALSE;
 }
 
 Boolean CMatcher::MatchesImpl(
@@ -689,12 +700,14 @@ Boolean CMatcher::MatchesImpl(
     /* [in] */ const String& s,
     /* [in] */ ArrayOf<Int32>* offsets)
 {
-    MatcherAccessor matcherAccessor(matcher, s, FALSE);
-    UBool result = matcherAccessor->matches(matcherAccessor.Status());
-    if (result) {
-        matcherAccessor.UpdateOffsets(offsets);
-    }
-    return result;
+    assert(0 && "TODO");
+    // MatcherAccessor matcherAccessor(matcher, s, FALSE);
+    // UBool result = matcherAccessor->matches(matcherAccessor.Status());
+    // if (result) {
+    //     matcherAccessor.UpdateOffsets(offsets);
+    // }
+    // return result;
+    return FALSE;
 }
 
 ECode CMatcher::OpenImpl(
@@ -706,7 +719,8 @@ ECode CMatcher::OpenImpl(
     VALIDATE_NOT_NULL(pattern);
 
     UErrorCode status = U_ZERO_ERROR;
-    *result = pattern->matcher(status);
+    assert(0 && "TODO");
+    // *result = pattern->matcher(status);
     return icu4_error(status);
 }
 
@@ -714,8 +728,10 @@ Boolean CMatcher::RequireEndImpl(
     /* [in] */ RegexMatcher* matcher)
 {
     assert(matcher != NULL);
-    MatcherAccessor matcherAccessor(matcher);
-    return matcherAccessor->requireEnd();
+    assert(0 && "TODO");
+    // MatcherAccessor matcherAccessor(matcher);
+    // return matcherAccessor->requireEnd();
+    return FALSE;
 }
 
 void CMatcher::SetInputImpl(
@@ -725,7 +741,8 @@ void CMatcher::SetInputImpl(
     /* [in] */ Int32 end)
 {
     MatcherAccessor matcherAccessor(matcher, s, TRUE);
-    matcherAccessor->region(start, end, matcherAccessor.Status());
+    assert(0 && "TODO");
+    // matcherAccessor->region(start, end, matcherAccessor.Status());
 }
 
 void CMatcher::UseAnchoringBoundsImpl(
@@ -733,7 +750,8 @@ void CMatcher::UseAnchoringBoundsImpl(
     /* [in] */ Boolean value)
 {
     MatcherAccessor matcherAccessor(matcher);
-    matcherAccessor->useAnchoringBounds(value);
+    assert(0 && "TODO");
+    // matcherAccessor->useAnchoringBounds(value);
 }
 
 void CMatcher::UseTransparentBoundsImpl(
@@ -741,7 +759,8 @@ void CMatcher::UseTransparentBoundsImpl(
     /* [in] */ Boolean value)
 {
     MatcherAccessor matcherAccessor(matcher);
-    matcherAccessor->useTransparentBounds(value);
+    assert(0 && "TODO");
+    // matcherAccessor->useTransparentBounds(value);
 }
 
 } // namespace Regex

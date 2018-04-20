@@ -60,7 +60,7 @@ endif
 
 ifeq "$(XDK_TARGET_PLATFORM)" "android"
 	#LIBRARIES += -lcutils -licuuc -licui18n -lssl -lsqlite -lziparchive -lfdlibm -lselinux -lutils
-	LIBRARIES += -llog -lz -lm -lcrypto -licuuc
+	LIBRARIES += -llog -lz -lm -lcrypto -licuuc.cr
 else
 ifeq "$(XDK_TARGET_PLATFORM)" "linux"
 LIBRARIES += -lm -lc -ldl -lpthread -lstdc++ -lz -lrt -licuuc -licui18n -lssl -lcrypto

@@ -1,6 +1,8 @@
+// © 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html
 /*
 ********************************************************************************
-*   Copyright (C) 1997-2014, International Business Machines
+*   Copyright (C) 1997-2016, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 ********************************************************************************
 *
@@ -32,7 +34,9 @@
 
 #include "unicode/uobject.h"
 #include "unicode/locid.h"
+#include "unicode/numsys.h"
 #include "unicode/unum.h"
+#include "unicode/unistr.h"
 
 /**
  * \file
@@ -163,8 +167,12 @@ public:
          * @stable ICU 4.6
          */
         kNineDigitSymbol,
+        /** Multiplication sign.
+         * @stable ICU 54
+         */
+        kExponentMultiplicationSymbol,
         /** count symbol constants */
-        kFormatSymbolCount
+        kFormatSymbolCount = kNineDigitSymbol + 2
     };
 
     /**
@@ -176,6 +184,26 @@ public:
      * @stable ICU 2.0
      */
     DecimalFormatSymbols(const Locale& locale, UErrorCode& status);
+
+#ifndef U_HIDE_DRAFT_API
+    /**
+     * Creates a DecimalFormatSymbols instance for the given locale with digits and symbols
+     * corresponding to the given NumberingSystem.
+     *
+     * This constructor behaves equivalently to the normal constructor called with a locale having a
+     * "numbers=xxxx" keyword specifying the numbering system by name.
+     *
+     * In this constructor, the NumberingSystem argument will be used even if the locale has its own
+     * "numbers=xxxx" keyword.
+     *
+     * @param locale    The locale to get symbols for.
+     * @param ns        The numbering system.
+     * @param status    Input/output parameter, set to success or
+     *                  failure code upon return.
+     * @draft ICU 60
+     */
+    DecimalFormatSymbols(const Locale& locale, const NumberingSystem& ns, UErrorCode& status);
+#endif  /* U_HIDE_DRAFT_API */
 
     /**
      * Create a DecimalFormatSymbols object for the default locale.
@@ -189,12 +217,6 @@ public:
      */
     DecimalFormatSymbols(UErrorCode& status);
 
-    // BEGIN android-added: we need a default constructor for performance.
-    // Proposed for ICU 4.8: http://icu-project.org/trac/ticket/7392
-    DecimalFormatSymbols();
-    // END android-added
-
-#ifndef U_HIDE_DRAFT_API
     /**
      * Creates a DecimalFormatSymbols object with last-resort data.
      * Intended for callers who cache the symbols data and
@@ -208,10 +230,9 @@ public:
      * @param status    Input/output parameter, set to success or
      *                  failure code upon return.
      * @return last-resort symbols
-     * @draft ICU 52
+     * @stable ICU 52
      */
     static DecimalFormatSymbols* createWithLastResortData(UErrorCode& status);
-#endif  /* U_HIDE_DRAFT_API */
 
     /**
      * Copy constructor.
@@ -335,9 +356,7 @@ public:
     static UClassID U_EXPORT2 getStaticClassID();
 
 private:
-    // BEGIN android-removed: we need a default constructor for performance.
-    // DecimalFormatSymbols(); // default constructor not implemented
-    // END android-removed
+    DecimalFormatSymbols();
 
     /**
      * Initializes the symbols from the LocaleElements resource bundle.
@@ -348,8 +367,11 @@ private:
      * @param success              Input/output parameter, set to success or
      *                             failure code upon return.
      * @param useLastResortData    determine if use last resort data
+     * @param ns                   The NumberingSystem to use; otherwise, fall
+     *                             back to the locale.
      */
-    void initialize(const Locale& locale, UErrorCode& success, UBool useLastResortData = FALSE);
+    void initialize(const Locale& locale, UErrorCode& success,
+        UBool useLastResortData = FALSE, const NumberingSystem* ns = nullptr);
 
     /**
      * Initialize the symbols with default values.
@@ -359,13 +381,30 @@ private:
     void setCurrencyForSymbols();
 
 public:
+
+#ifndef U_HIDE_INTERNAL_API
+    /**
+     * @internal For ICU use only
+     */
+    inline UBool isCustomCurrencySymbol() const {
+        return fIsCustomCurrencySymbol;
+    }
+
+    /**
+     * @internal For ICU use only
+     */
+    inline UBool isCustomIntlCurrencySymbol() const {
+        return fIsCustomIntlCurrencySymbol;
+    }
+#endif  /* U_HIDE_INTERNAL_API */
+
     /**
      * _Internal_ function - more efficient version of getSymbol,
      * returning a const reference to one of the symbol strings.
      * The returned reference becomes invalid when the symbol is changed
      * or when the DecimalFormatSymbols are destroyed.
      * ### TODO markus 2002oct11: Consider proposing getConstSymbol() to be really public.
-     * Note: moved #ifndef U_HIDE_INTERNAL_API after this, it is needed for inline in DecimalFormat
+     * Note: moved #ifndef U_HIDE_INTERNAL_API after this, since this is needed for inline in DecimalFormat
      *
      * @param symbol Constant to indicate a number format symbol.
      * @return the format symbol by the param 'symbol'
@@ -378,7 +417,7 @@ public:
      * Returns that pattern stored in currecy info. Internal API for use by NumberFormat API.
      * @internal
      */
-    inline const UChar* getCurrencyPattern(void) const;
+    inline const char16_t* getCurrencyPattern(void) const;
 #endif  /* U_HIDE_INTERNAL_API */
 
 private:
@@ -409,10 +448,12 @@ private:
 
     char actualLocale[ULOC_FULLNAME_CAPACITY];
     char validLocale[ULOC_FULLNAME_CAPACITY];
-    const UChar* currPattern;
+    const char16_t* currPattern;
 
     UnicodeString currencySpcBeforeSym[UNUM_CURRENCY_SPACING_COUNT];
     UnicodeString currencySpcAfterSym[UNUM_CURRENCY_SPACING_COUNT];
+    UBool fIsCustomCurrencySymbol;
+    UBool fIsCustomIntlCurrencySymbol;
 };
 
 // -------------------------------------
@@ -428,8 +469,7 @@ DecimalFormatSymbols::getSymbol(ENumberFormatSymbol symbol) const {
     return *strPtr;
 }
 
-#ifndef U_HIDE_INTERNAL_API
-
+// See comments above for this function. Not hidden with #ifndef U_HIDE_INTERNAL_API
 inline const UnicodeString &
 DecimalFormatSymbols::getConstSymbol(ENumberFormatSymbol symbol) const {
     const UnicodeString *strPtr;
@@ -441,13 +481,16 @@ DecimalFormatSymbols::getConstSymbol(ENumberFormatSymbol symbol) const {
     return *strPtr;
 }
 
-#endif  /* U_HIDE_INTERNAL_API */
-
-
 // -------------------------------------
 
 inline void
 DecimalFormatSymbols::setSymbol(ENumberFormatSymbol symbol, const UnicodeString &value, const UBool propogateDigits = TRUE) {
+    if (symbol == kCurrencySymbol) {
+        fIsCustomCurrencySymbol = TRUE;
+    }
+    else if (symbol == kIntlCurrencySymbol) {
+        fIsCustomIntlCurrencySymbol = TRUE;
+    }
     if(symbol<kFormatSymbolCount) {
         fSymbols[symbol]=value;
     }
@@ -473,7 +516,7 @@ DecimalFormatSymbols::getLocale() const {
 }
 
 #ifndef U_HIDE_INTERNAL_API
-inline const UChar*
+inline const char16_t*
 DecimalFormatSymbols::getCurrencyPattern() const {
     return currPattern;
 }

@@ -1,12 +1,14 @@
+// © 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html
 /*
 *******************************************************************************
 *
-*   Copyright (C) 2003-2014, International Business Machines
+*   Copyright (C) 2003-2015, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 *
 *******************************************************************************
 *   file name:  ucol_swp.cpp
-*   encoding:   US-ASCII
+*   encoding:   UTF-8
 *   tab size:   8 (not used)
 *   indentation:4
 *
@@ -307,7 +309,6 @@ swapFormatVersion3(const UDataSwapper *ds,
              * if UCAConsts!=0 then contractionUCACombos because we are swapping
              * the UCA data file, and we know that the UCA contains contractions
              */
-            count=header.contractionUCACombos-header.UCAConsts;
             ds->swapArray32(ds, inBytes+header.UCAConsts, header.contractionUCACombos-header.UCAConsts,
                                outBytes+header.UCAConsts, pErrorCode);
         }
@@ -341,7 +342,7 @@ swapFormatVersion3(const UDataSwapper *ds,
     return header.size;
 }
 
-// swap formatVersion 4 ---------------------------------------------------- ***
+// swap formatVersion 4 or 5 ----------------------------------------------- ***
 
 // The following are copied from CollationDataReader, trading an awkward copy of constants
 // for an awkward relocation of the i18n collationdatareader.h file into the common library.
@@ -567,7 +568,7 @@ ucol_swap(const UDataSwapper *ds,
         info.dataFormat[1]==0x43 &&
         info.dataFormat[2]==0x6f &&
         info.dataFormat[3]==0x6c &&
-        (info.formatVersion[0]==3 || info.formatVersion[0]==4)
+        (3<=info.formatVersion[0] && info.formatVersion[0]<=5)
     )) {
         udata_printError(ds, "ucol_swap(): data format %02x.%02x.%02x.%02x "
                          "(format version %02x.%02x) is not recognized as collation data\n",

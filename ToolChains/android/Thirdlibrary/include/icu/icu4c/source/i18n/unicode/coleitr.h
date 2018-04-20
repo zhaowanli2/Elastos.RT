@@ -1,3 +1,5 @@
+// © 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html
 /*
  ******************************************************************************
  *   Copyright (C) 1997-2014, International Business Machines
@@ -45,6 +47,7 @@ U_NAMESPACE_BEGIN
 
 struct CollationData;
 
+class CharacterIterator;
 class CollationIterator;
 class RuleBasedCollator;
 class UCollationPCE;
@@ -113,7 +116,7 @@ class UVector32;
 * @see     RuleBasedCollator
 * @version 1.8 Jan 16 2001
 */
-class U_I18N_API CollationElementIterator : public UObject {
+class U_I18N_API CollationElementIterator U_FINAL : public UObject {
 public: 
 
     // CollationElementIterator public data member ------------------------------
