@@ -21,7 +21,7 @@ CMasterWalletManager::~CMasterWalletManager()
     std::map<const char*, IMasterWallet*, compare_string>::iterator it = mMasterWalletsMap.begin();
     for (; it != mMasterWalletsMap.end(); ++it) {
         IMasterWallet* masterWallet = it->second;
-        if (masterWallet) masterWallet->Release();
+        if (masterWallet) delete ((MasterWallet*)masterWallet);
     }
 }
 
@@ -121,7 +121,7 @@ ECode CMasterWalletManager::DestroyWallet(
     std::map<const char*, IMasterWallet*, compare_string>::iterator iter = mMasterWalletsMap.find(masterWalletId.string());
     if (iter != mMasterWalletsMap.end()) {
         IMasterWallet* wallet = iter->second;
-        if (wallet) wallet->Release();
+        if (wallet) delete ((MasterWallet*)wallet);
         mMasterWalletsMap.erase(iter);
     }
 
