@@ -14,6 +14,7 @@ CMasterWalletManager::CMasterWalletManager()
 
 CMasterWalletManager::~CMasterWalletManager()
 {
+    printf("======================= CMasterWalletManager =========================LINE=[%d]\n", __LINE__);
     if (mSpvMasterWalletMgr) {
         delete mSpvMasterWalletMgr;
     }
@@ -162,8 +163,11 @@ ECode CMasterWalletManager::GenerateMnemonic(
 {
     VALIDATE_NOT_NULL(mnemonic);
     VALIDATE_NOT_NULL(mSpvMasterWalletMgr);
+    printf("======================= CMasterWalletManager =========================LINE=[%d], lan=[%s]\n", __LINE__, language.string());
     std::string result = mSpvMasterWalletMgr->GenerateMnemonic(language.string());
+    printf("======================= CMasterWalletManager =========================LINE=[%d]\n", __LINE__);
     *mnemonic = String(result.c_str());
+    printf("======================= CMasterWalletManager =========================LINE=[%d]\n", __LINE__);
     return NOERROR;
 }
 

@@ -9,3 +9,9 @@ if("$ENV{XDK_TARGET_PLATFORM}" STREQUAL "android")
         AutoGenerateJavaCodes
     )
 endif()
+
+if("$ENV{XDK_TARGET_PLATFORM}" STREQUAL "linux" AND "$ENV{XDK_TARGET_CPU_ARCH}" STREQUAL "64")
+    xdk_add_subdirectories(
+        WalletTest
+    )
+endif()
