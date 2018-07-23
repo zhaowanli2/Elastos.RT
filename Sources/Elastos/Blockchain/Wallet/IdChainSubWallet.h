@@ -17,11 +17,8 @@ public:
 
     CARAPI CreateIdTransaction(
         /* [in] */ const String& fromAddress,
-        /* [in] */ const String& toAddress,
-        /* [in] */ Int64 amount,
         /* [in] */ const String& payloadJson,
         /* [in] */ const String& programJson,
-        /* [in] */ Int64 fee,
         /* [in] */ const String& memo,
         /* [in] */ const String& remark,
         /* [out] */ String* result);

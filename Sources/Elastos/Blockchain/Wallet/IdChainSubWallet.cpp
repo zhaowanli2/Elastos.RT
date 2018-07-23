@@ -12,11 +12,8 @@ IdChainSubWallet::IdChainSubWallet(
 
 ECode IdChainSubWallet::CreateIdTransaction(
     /* [in] */ const String& fromAddress,
-    /* [in] */ const String& toAddress,
-    /* [in] */ Int64 amount,
     /* [in] */ const String& payloadJson,
     /* [in] */ const String& programJson,
-    /* [in] */ Int64 fee,
     /* [in] */ const String& memo,
     /* [in] */ const String& remark,
     /* [out] */ String* result)
@@ -25,8 +22,8 @@ ECode IdChainSubWallet::CreateIdTransaction(
     Elastos::ElaWallet::IIdChainSubWallet* idchainSubWallet = (Elastos::ElaWallet::IIdChainSubWallet*)(void*)mSpvSubWallet;
     assert(idchainSubWallet != NULL);
 
-    nlohmann::json json = idchainSubWallet->CreateIdTransaction(fromAddress.string(), toAddress.string(), amount,
-        ToJosnFromString(payloadJson.string()) , ToJosnFromString(programJson.string()), fee, memo.string(), remark.string());
+    nlohmann::json json = idchainSubWallet->CreateIdTransaction(fromAddress.string(), ToJosnFromString(payloadJson.string())
+            , ToJosnFromString(programJson.string()), memo.string(), remark.string());
     *result = ToStringFromJson(json);
     return NOERROR;
 }

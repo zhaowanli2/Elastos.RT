@@ -27,6 +27,14 @@ private:
             /* [in] */ const nlohmann::json &desc,
             /* [in] */ uint32_t confirms);
 
+        virtual void OnBlockSyncStarted();
+
+        virtual void OnBlockHeightIncreased(
+            /* [in] */ uint32_t currentBlockHeight,
+            /* [in] */ double progress);
+
+        virtual void OnBlockSyncStopped();
+
     public:
         AutoPtr<ISubWalletListener> mListener;
     };
@@ -88,7 +96,6 @@ public:
         /* [in] */ const String& fromAddress,
         /* [in] */ const String& toAddress,
         /* [in] */ Int64 amount,
-        /* [in] */ Int64 fee,
         /* [in] */ const String& memo,
         /* [in] */ const String& remark,
         /* [out] */ String* txidJson);
@@ -103,7 +110,6 @@ public:
         /* [in] */ const String& fromAddress,
         /* [in] */ const String& toAddress,
         /* [in] */ Int64 amount,
-        /* [in] */ Int64 fee,
         /* [in] */ const String& memo,
         /* [out] */ String* transactionJson);
 

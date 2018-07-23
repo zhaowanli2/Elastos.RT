@@ -1,9 +1,9 @@
 
 #include "SubWallet.h"
+#include <sstream>
 #include "MainchainSubWallet.h"
 #include "IdChainSubWallet.h"
 #include "SidechainSubWallet.h"
-#include <sstream>
 
 String ToStringFromJson(nlohmann::json jsonValue);
 nlohmann::json ToJosnFromString(const char* str);
@@ -167,14 +167,13 @@ ECode SubWallet::CreateTransaction (
     /* [in] */ const String& fromAddress,
     /* [in] */ const String& toAddress,
     /* [in] */ Int64 amount,
-    /* [in] */ Int64 fee,
     /* [in] */ const String& memo,
     /* [in] */ const String& remark,
     /* [out] */ String* txidJson)
 {
     VALIDATE_NOT_NULL(txidJson);
     nlohmann::json result = mSpvSubWallet->CreateTransaction(fromAddress.string(), toAddress.string(), amount
-            , fee, memo.string(), remark.string());
+            , memo.string(), remark.string());
     *txidJson = ToStringFromJson(result);
     return NOERROR;
 }
@@ -195,13 +194,12 @@ ECode SubWallet::CreateMultiSignTransaction (
     /* [in] */ const String& fromAddress,
     /* [in] */ const String& toAddress,
     /* [in] */ Int64 amount,
-    /* [in] */ Int64 fee,
     /* [in] */ const String& memo,
     /* [out] */ String* transactionJson)
 {
     VALIDATE_NOT_NULL(transactionJson);
     nlohmann::json result = mSpvSubWallet->CreateMultiSignTransaction(fromAddress.string(), toAddress.string()
-                , amount, fee, memo.string());
+                , amount, memo.string());
     *transactionJson = ToStringFromJson(result);
     return NOERROR;
 }
@@ -295,6 +293,26 @@ void SubWallet::SubWalletCallback::OnTransactionStatusChanged(
 {
     if (mListener == NULL) return;
     mListener->OnTransactionStatusChanged(String(txid.c_str()), String(status.c_str()), ToStringFromJson(desc), confirms);
+}
+
+void SubWallet::SubWalletCallback::OnBlockSyncStarted()
+{
+    if (mListener == NULL) return;
+    mListener->OnBlockSyncStarted();
+}
+
+void SubWallet::SubWalletCallback::OnBlockHeightIncreased(
+    /* [in] */ uint32_t currentBlockHeight,
+    /* [in] */ double progress)
+{
+    if (mListener == NULL) return;
+    mListener->OnBlockHeightIncreased(currentBlockHeight, progress);
+}
+
+void SubWallet::SubWalletCallback::OnBlockSyncStopped()
+{
+    if (mListener == NULL) return;
+    mListener->OnBlockSyncStopped();
 }
 
 ECode SubWallet::AddSubWalletCallbackNode(

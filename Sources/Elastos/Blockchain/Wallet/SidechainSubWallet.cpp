@@ -17,7 +17,6 @@ ECode SidechainSubWallet::CreateWithdrawTransaction(
     /* [in] */ const String& mainchainAccountsJson,
     /* [in] */ const String& mainchainAmountsJson,
     /* [in] */ const String& mainchainIndexsJson,
-    /* [in] */ Int64 fee,
     /* [in] */ const String& memo,
     /* [in] */ const String& remark,
     /* [out] */ String* txidJson)
@@ -28,7 +27,7 @@ ECode SidechainSubWallet::CreateWithdrawTransaction(
 
     nlohmann::json json = sidechainSubWallet->CreateWithdrawTransaction(fromAddress.string(), toAddress.string(), amount,
                 ToJosnFromString(mainchainAccountsJson.string()) , ToJosnFromString(mainchainAmountsJson.string()),
-                ToJosnFromString(mainchainIndexsJson.string()), fee, memo.string(), remark.string());
+                ToJosnFromString(mainchainIndexsJson.string()), memo.string(), remark.string());
     *txidJson = ToStringFromJson(json);
     return NOERROR;
 }

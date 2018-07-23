@@ -22,7 +22,6 @@ public:
         /* [in] */ const String& mainchainAccountsJson,
         /* [in] */ const String& mainchainAmountsJson,
         /* [in] */ const String& mainchainIndexsJson,
-        /* [in] */ Int64 fee,
         /* [in] */ const String& memo,
         /* [in] */ const String& remark,
         /* [out] */ String* txidJson);

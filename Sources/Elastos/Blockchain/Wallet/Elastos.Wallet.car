@@ -20,11 +20,37 @@ module
 
 
     interface ISubWalletListener {
+        /**
+         * Callback method fired when status of a transaction changed.
+         * @param txid indicate hash of the transaction.
+         * @param status can be "Added", "Deleted" or "Updated".
+         * @param desc is an detail description of transaction status.
+         * @param confirms is confirm count util this callback fired.
+         */
         OnTransactionStatusChanged (
             [in] String txid,
             [in] String status,
             [in] String desc,
             [in] Int32 confirms);
+
+        /**
+         * Callback method fired when block begin synchronizing with a peer. This callback could be used to show progress.
+         */
+        OnBlockSyncStarted();
+
+        /**
+         * Callback method fired when best block chain height increased. This callback could be used to show progress.
+         * @param currentBlockHeight is the of current block when callback fired.
+         * @param progress is current progress when block height increased.
+         */
+        OnBlockHeightIncreased(
+            [in] Int32 currentBlockHeight,
+            [in] Double progress);
+
+        /**
+         * Callback method fired when block end synchronizing with a peer. This callback could be used to show progress.
+         */
+        OnBlockSyncStopped();
     }
 
     interface ISubWallet {
@@ -59,7 +85,6 @@ module
             [in] String fromAddress,
             [in] String toAddress,
             [in] Int64 amount,
-            [in] Int64 fee,
             [in] String memo,
             [in] String remark,
             [out] String* txidJson);
@@ -74,7 +99,6 @@ module
             [in] String fromAddress,
             [in] String toAddress,
             [in] Int64 amount,
-            [in] Int64 fee,
             [in] String memo,
             [out] String* transactionJson);
 
@@ -118,7 +142,6 @@ module
             [in] String sidechainAccountsJson,
             [in] String sidechainAmountsJson,
             [in] String sidechainIndexsJson,
-            [in] Int64 fee,
             [in] String memo,
             [in] String remark,
             [out] String* txidJson);
@@ -135,7 +158,6 @@ module
             [in] String mainchainAccountsJson,
             [in] String mainchainAmountsJson,
             [in] String mainchainIndexsJson,
-            [in] Int64 fee,
             [in] String memo,
             [in] String remark,
             [out] String* txidJson);
@@ -150,11 +172,8 @@ module
     interface IIdChainSubWallet /*extends ISubWallet*/ {
         CreateIdTransaction(
             [in] String fromAddress,
-            [in] String toAddress,
-            [in] Int64 amount,
             [in] String payloadJson,
             [in] String programJson,
-            [in] Int64 fee,
             [in] String memo,
             [in] String remark,
             [out] String* result);
