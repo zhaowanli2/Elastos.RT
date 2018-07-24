@@ -1,6 +1,10 @@
 
 #include "MainchainSubWallet.h"
 
+#include <android/log.h>
+#define TAG "Elastos_Droid_Wallet"
+#define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG,TAG ,__VA_ARGS__)
+
 extern String ToStringFromJson(nlohmann::json jsonValue);
 extern nlohmann::json ToJosnFromString(const char* str);
 
@@ -25,7 +29,12 @@ ECode MainchainSubWallet::CreateDepositTransaction(
     Elastos::ElaWallet::IMainchainSubWallet* mainchainSubWallet = (Elastos::ElaWallet::IMainchainSubWallet*)(void*)mSpvSubWallet;
     assert(mainchainSubWallet != NULL);
 
-    nlohmann::json json = mainchainSubWallet->CreateDepositTransaction(fromAddress.string(), toAddress.string(), amount
+    String fAddress(fromAddress);
+    if (fAddress.IsNull()) {
+        fAddress = String("");
+    }
+
+    nlohmann::json json = mainchainSubWallet->CreateDepositTransaction(fAddress.string(), toAddress.string(), amount
             , ToJosnFromString(sidechainAccountsJson.string()), ToJosnFromString(sidechainAmountsJson.string()),
             ToJosnFromString(sidechainIndexsJson.string()), memo.string(), remark.string());
     *txidJson = ToStringFromJson(json);
