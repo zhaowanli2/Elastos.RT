@@ -11,10 +11,14 @@ nlohmann::json ToJosnFromString(const char* str);
 SubWallet::SubWallet(
     /* [in] */ Elastos::ElaWallet::ISubWallet* spvSubWallet)
     : mSpvSubWallet(spvSubWallet)
-{}
+{
+    pthread_mutex_init(&mCallbacksLock, NULL);
+}
 
 SubWallet::~SubWallet()
-{}
+{
+    pthread_mutex_destroy(&mCallbacksLock);
+}
 
 PInterface SubWallet::Probe(
     /* [in] */ REIID riid)
@@ -329,7 +333,11 @@ ECode SubWallet::AddSubWalletCallbackNode(
     }
 
     SubWalletCallbackNode* listenerNode = new SubWalletCallbackNode;
-    if (listenerNode == NULL) return E_OUT_OF_MEMORY;
+    if (listenerNode == NULL) {
+        pthread_mutex_unlock(&mCallbacksLock);
+        return E_OUT_OF_MEMORY;
+    }
+
     listenerNode->mCallback = callback;
     mCallbacks.InsertFirst(listenerNode);
     pthread_mutex_unlock(&mCallbacksLock);
