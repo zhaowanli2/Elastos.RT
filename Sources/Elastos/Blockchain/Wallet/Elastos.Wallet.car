@@ -54,33 +54,77 @@ module
     }
 
     interface ISubWallet {
+        /**
+         * Get the sub wallet chain id.
+         * @[out param] sub wallet chain id.
+         */
         GetChainId(
             [out] String* id);
 
+        /**
+         * Get balances of all addresses in json format.
+         * @[out param] balances of all addresses in json format.
+         */
         GetBalanceInfo (
             [out] String* balanceInfoJson);
 
+        /**
+         * Get sum of balances of all addresses.
+         * @[out param] sum of balances.
+         */
         GetBalance (
             [out] Int64* balance);
 
+        /**
+         * Create a new address or return existing unused address. Note that if create the sub wallet by setting the singleAddress to true, will always return the single address.
+         * @[out param] a new address or existing unused address.
+         */
         CreateAddress (
             [out] String* address);
 
+        /**
+         * Get all created addresses in json format. The parameters of start and count are used for purpose of paging.
+         * @param start specify start index of all addresses list.
+         * @param count specify count of addresses we need.
+         * @[out param] addresses in json format.
+         */
         GetAllAddress (
             [in] Int32 start,
             [in] Int32 count,
             [out] String* addressesJson);
 
+        /**
+         * Get balance of only the specified address.
+         * @param address is one of addresses created by current sub wallet.
+         * @[out param] balance of specified address.
+         */
         GetBalanceWithAddress (
             [in] String address,
             [out] Int64* balance);
 
+        /**
+         * Add a sub wallet callback object listened to current sub wallet.
+         * @param subCallback is a pointer who want to listen events of current sub wallet.
+         */
         AddCallback (
             [in] ISubWalletListener* subCallback);
 
+        /**
+         * Remove a sub wallet callback object listened to current sub wallet.
+         * @param subCallback is a pointer who want to listen events of current sub wallet.
+         */
         RemoveCallback (
             [in] ISubWalletListener* subCallback);
 
+        /**
+         * Create a normal transaction and return the content of transaction in json format.
+         * @param fromAddress specify which address we want to spend, or just input empty string to let wallet choose UTXOs automatically.
+         * @param toAddress specify which address we want to send.
+         * @param amount specify amount we want to send.
+         * @param memo input memo attribute for describing.
+         * @param remark is used to record message of local wallet.
+         * @[out] If success return the content of transaction in json format.
+         */
         CreateTransaction (
             [in] String fromAddress,
             [in] String toAddress,
@@ -89,12 +133,27 @@ module
             [in] String remark,
             [out] String* txidJson);
 
+        /**
+         * Create a multi-sign address used to create multi-sign transaction.
+         * @param multiPublicKeyJson is a list of public keys in json format.
+         * @param totalSignNum specify total sign number (n).
+         * @param requiredSignNum specify required sign number (m).
+         * @[out param] multi-sign address.
+         */
         CreateMultiSignAddress (
             [in] String multiPublicKeyJson,
             [in] Int32 totalSignNum,
             [in] Int32 requiredSignNum,
             [out] String* multiSignAddress);
 
+        /**
+         * Create a multi-sign transaction and return the content of transaction in json format.
+         * @param fromAddress specify which address we want to spend, or just input empty string to let wallet choose UTXOs automatically.
+         * @param toAddress specify which address we want to send.
+         * @param amount specify amount we want to send.
+         * @param memo input memo attribute for describing.
+         * @[out param] If success return the content of transaction in json format.
+         */
         CreateMultiSignTransaction (
             [in] String fromAddress,
             [in] String toAddress,
@@ -102,29 +161,62 @@ module
             [in] String memo,
             [out] String* transactionJson);
 
+        /**
+         * Send raw transaction by p2p network.
+         * @param transactionJson content of transaction in json format.
+         * @param fee specify fee for miners, fee must greater or equal than 1000 (sela).
+         * @param payPassword use to decrypt the root private key temporarily. Pay password should between 8 and 128, otherwise will throw invalid argument exception.
+         * @[out param] Sent result in json format.
+         */
         SendRawTransaction (
             [in] String transactionJson,
             [in] Int64 fee,
             [in] String payPassword,
             [out] String* txidJson);
 
+        /**
+         * Get all qualified transactions sorted by descent (newest first).
+         * @param start specify start index of all transactions list.
+         * @param count specify count of transactions we need.
+         * @param addressOrTxid filter word which can be an address or a transaction id, if empty all transactions shall be qualified.
+         * @[out param] All qualified transactions in json format.
+         */
         GetAllTransaction (
             [in] Int32 start,
             [in] Int32 count,
             [in] String addressOrTxid,
             [out] String* transactionListJson);
 
+        /**
+         * Sign message through root private key of the master wallet.
+         * @param message need to signed, it should not be empty.
+         * @param payPassword use to decrypt the root private key temporarily. Pay password should between 8 and 128, otherwise will throw invalid argument exception.
+         * @[out param] signed data of the message.
+         */
         Sign (
             [in] String message,
             [in] String payPassword,
             [out] String* signature);
 
+        /**
+         * Verify signature by public key and raw message. This method can check signatures signed by any private keys not just the root private key of the master wallet.
+         * @param publicKey belong to the private key signed the signature.
+         * @param message raw data.
+         * @param signature signed data by a private key that correspond to the public key.
+         * @[out param] the result wrapper by a json.
+         */
         CheckSign (
             [in] String address,
             [in] String message,
             [in] String signature,
             [out] String* resultJson);
 
+        /**
+         * Calculate transaction fee by content of transaction.
+         * @param rawTransaction content of transaction in json format.
+         * @param feePerKb specify the factor to calculate fee (transaction size * feePerKb).
+         * @[out param] Calculate result of final fee.
+         */
         CalculateTransactionFee(
             [in] String rawTransaction,
             [in] Int64 feePerKb,
@@ -135,6 +227,18 @@ module
      * extends ISubWallet
      */
     interface IMainchainSubWallet /*extends ISubWallet*/ {
+        /**
+         * Create a deposit transaction and return the content of transaction in json format. Note that \p amount should greater than sum of \p so that we will leave enough fee for sidechain.
+         * @param fromAddress specify which address we want to spend, or just input empty string to let wallet choose UTXOs automatically.
+         * @param toAddress specify which address we want to send, in this method to address shall be genesis address of the side chain
+         * @param amount specify amount we want to send.
+         * @param sidechainAccounts a list of sidechain accounts in json format.
+         * @param sidechainAmounts a list of sidechain amounts in json format, each amount should correspond to \p sidechainAccounts by order.
+         * @param sidechainIndices a list of sidechain indices in json format, each index should correspond to \p sidechainAccounts by order.
+         * @param memo input memo attribute for describing.
+         * @param remark is used to record message of local wallet.
+         * @[out param]　If success return the content of transaction in json format.
+         */
         CreateDepositTransaction(
             [in] String fromAddress,
             [in] String toAddress,
@@ -151,6 +255,18 @@ module
      * extends ISubWallet
      */
     interface ISidechainSubWallet /*extends ISubWallet*/ {
+        /**
+         * Create a withdraw transaction and return the content of transaction in json format. Note that \p amount should greater than sum of \p so that we will leave enough fee for mainchain.
+         * @param fromAddress specify which address we want to spend, or just input empty string to let wallet choose UTXOs automatically.
+         * @param toAddress specify which address we want to send, in this method to address shall be destroy address of the side chain. Note that destroy address is a special address generate by a program hash that all bytes set to zero.
+         * @param amount specify amount we want to send.
+         * @param mainchainAccounts a list of mainchain accounts in json format.
+         * @param mainchainAmounts a list of mainchain amounts in json format, each amount should correspond to \p mainchainAccounts by order.
+         * @param mainchainIndexs a list of mainchain indices in json format, each index should correspond to \p mainchainAccounts by order.
+         * @param memo input memo attribute for describing.
+         * @param remark is used to record message of local wallet.
+         * @[out param] If success return the content of transaction in json format.
+         */
         CreateWithdrawTransaction(
             [in] String fromAddress,
             [in] String toAddress,
@@ -162,6 +278,10 @@ module
             [in] String remark,
             [out] String* txidJson);
 
+        /**
+         * Get genesis address of the side chain, the address is a special address will be set to toAddress in CreateDepositTransaction.
+         * @[out param] genesis address of the side chain.
+         */
         GetGenesisAddress(
             [out] String* address);
     }
@@ -170,6 +290,15 @@ module
      * extends ISubWallet
      */
     interface IIdChainSubWallet /*extends ISubWallet*/ {
+        /**
+         * Create a id transaction and return the content of transaction in json format, this is a special transaction to register id related information on id chain.
+         * @param fromAddress specify which address we want to spend, or just input empty string to let wallet choose UTXOs automatically.
+         * @param payloadJson is payload for register id related information in json format, the content of payload should have Id, Path, DataHash, Proof, and Sign.
+         * @param programJson is program data in json format, which contains redeem script of id (Code) and sign of the \p payloadJson with id related private key (Parameter).
+         * @param memo input memo attribute for describing.
+         * @param remark is used to record message of local wallet.
+         * @[out param] If success return the content of transaction in json format.
+         */
         CreateIdTransaction(
             [in] String fromAddress,
             [in] String payloadJson,
@@ -180,12 +309,28 @@ module
     }
 
     interface IMasterWallet {
+        /**
+         * Get the master wallet id.
+         * @[out param] master wallet id.
+         */
         GetId(
             [out] String* id);
 
+        /**
+         * Get wallet existing sub wallets.
+         * @[out param] existing sub wallets by array.
+         */
         GetAllSubWallets(
             [out, callee] ArrayOf<ISubWallet*>* subWallets);
 
+        /**
+         * Create a sub wallet by specifying wallet type.
+         * @param chainID unique identity of a sub wallet. Chain id should not be empty.
+         * @param payPassword use to encrypt important things(such as private key) in memory. Pay password should between 8 and 128, otherwise will throw invalid argument exception.
+         * @param singleAddress if true created wallet will have only one address inside, otherwise sub wallet will manager a chain of addresses for security.
+         * @param feePerKb specify fee per kb to calculate fee by size of transaction. Fee per key default set to zero so that sub wallet will calculate by default "fee rate".
+         * @[out param] If success will return a pointer of sub wallet interface.
+         */
         CreateSubWallet(
             [in] String chainID,
             [in] String payPassword,
@@ -193,6 +338,15 @@ module
             [in] Int64 feePerKb,
             [out] ISubWallet** subWallet);
 
+        /**
+         * Recover a sub wallet from scratch.
+         * @param chainID unique identity of a sub wallet. Chain id should not be empty.
+         * @param payPassword use to encrypt important things(such as private key) in memory. Pay password should between 8 and 128, otherwise will throw invalid argument exception.
+         * @param singleAddress singleAddress if true created wallet will have only one address inside, otherwise sub wallet will manager a chain of addresses for security.
+         * @param limitGap specify the max gap length for recover addresses and transactions.
+         * @param feePerKb specify fee per kb to calculate fee by size of transaction. Fee per key default set to zero so that sub wallet will calculate by default "fee rate".
+         * @[out param] If success will return a pointer of sub wallet interface.
+         */
         RecoverSubWallet(
             [in] String chainID,
             [in] String payPassword,
@@ -201,36 +355,80 @@ module
             [in] Int64 feePerKb,
             [out] ISubWallet** subWallet);
 
+        /**
+         * Destroy a sub wallet created by the master wallet.
+         * @param wallet sub wallet object, should created by the master wallet.
+         */
         DestroyWallet(
             [in] ISubWallet *wallet);
 
+        /**
+         * Get public key of the root private key belongs to the master wallet.
+         * @[out param] public key of the root private key
+         */
         GetPublicKey(
             [out] String* publicKey);
 
+        /**
+         * Sign message through root private key of the master wallet.
+         * @param message need to signed, it should not be empty.
+         * @param payPassword use to decrypt the root private key temporarily. Pay password should between 8 and 128, otherwise will throw invalid argument exception.
+         * @[out param] signed data of the message.
+         */
         Sign(
             [in] String message,
             [in] String payPassword,
             [out] String* result);
 
+        /**
+         * Verify signature by public key and raw message. This method can check signatures signed by any private keys not just the root private key of the master wallet.
+         * @param publicKey belong to the private key signed the signature.
+         * @param message raw data.
+         * @param signature signed data by a private key that correspond to the public key.
+         * @[out param] the result wrapper by a json.
+         */
         CheckSign(
             [in] String publicKey,
             [in] String message,
             [in] String signature,
             [out] String* resultJson);
 
+        /**
+         * Verify an address which can be normal, multi-sign, cross chain, or id address.
+         * @param address to be verified.
+         * @[out param] True if valid, otherwise return false.
+         */
         IsAddressValid(
             [in] String address,
             [out] Boolean* valid);
 
+        /**
+         * Get all chain ids of supported chains.
+         * @[out param] a list of chain id.
+         */
         GetSupportedChains(
             [out, callee] ArrayOf<String>* supportedChains);
 
+        /**
+         * Change pay password which encrypted private key and other important data in memory.
+         * @param oldPassword the old pay password.
+         * @param newPassword new pay password.
+         */
         ChangePassword(
             [in] String oldPassword,
             [in] String newPassword);
     }
 
     interface IMasterWalletManager {
+        /**
+          * Create a new master wallet by mnemonic and phrase password, or return existing master wallet if current master wallet manager has the master wallet id.
+          * @param masterWalletId is the unique identification of a master wallet object.
+          * @param mnemonic use to generate seed which deriving the master private key and chain code.
+          * @param phrasePassword combine with random seed to generate root key and chain code. Phrase password can be empty or between 8 and 128, otherwise will throw invalid argument exception.
+          * @param payPassword use to encrypt important things(such as private key) in memory. Pay password should between 8 and 128, otherwise will throw invalid argument exception.
+          * @param language specify language of mnemonic, value of language should correspond to the language of \p mnemonic.
+          * @[out param] If success will return a pointer of master wallet interface.
+          */
         CreateMasterWallet(
             [in] String masterWalletId,
             [in] String mnemonic,
@@ -239,12 +437,29 @@ module
             [in] String language,
             [out] IMasterWallet** masterWallet);
 
+        /**
+         * Get manager existing master wallets.
+         * @[out param] existing master wallet array.
+         */
         GetAllMasterWallets(
             [out, callee] ArrayOf<IMasterWallet*>* wallets);
 
+        /**
+         * Destroy a master wallet.
+         * @param masterWallet A pointer of master wallet interface create or imported by wallet factory object.
+         */
         DestroyWallet(
             [in] String masterWalletId);
 
+        /**
+         * Import master wallet by key store file.
+         * @param masterWalletId is the unique identification of a master wallet object.
+         * @param keystoreContent specify key store content in json format.
+         * @param backupPassword use to encrypt key store file. Backup password should between 8 and 128, otherwise will throw invalid argument exception.
+         * @param payPassword use to encrypt important things(such as private key) in memory. Pay password should between 8 and 128, otherwise will throw invalid argument exception.
+         * @param phrasePassword combine with random seed to generate root key and chain code. Phrase password can be empty or between 8 and 128, otherwise will throw invalid argument exception.
+         * @[out param] If success will return a pointer of master wallet interface.
+         */
         ImportWalletWithKeystore(
             [in] String masterWalletId,
             [in] String keystoreContent,
@@ -253,6 +468,15 @@ module
             [in] String phrasePassword,
             [out] IMasterWallet** masterWallet);
 
+        /**
+         * Import master wallet by mnemonic.
+         * @param masterWalletId is the unique identification of a master wallet object.
+         * @param mnemonic for importing the master wallet.
+         * @param phrasePassword combine with mnemonic to generate root key and chain code. Phrase password can be empty or between 8 and 128, otherwise will throw invalid argument exception.
+         * @param payPassword use to encrypt important things(such as private key) in memory. Pay password should between 8 and 128, otherwise will throw invalid argument exception.
+         * @param language specify language of mnemonic. Language should not be empty, and exit corresponding language config file under the root path. The config begin with fixed prefix "mnemonic_" and end with ".txt" extension, for example mnemonic of Chinese config will be "mnemonic_chinese.txt".
+         * @[out param] If success will return a pointer of master wallet interface.
+         */
         ImportWalletWithMnemonic(
             [in] String masterWalletId,
             [in] String mnemonic,
@@ -261,21 +485,43 @@ module
             [in] String language,
             [out] IMasterWallet** masterWallet);
 
+        /**
+         * Export key store content of the master wallet in json format.
+         * @param masterWallet A pointer of master wallet interface create or imported by wallet factory object.
+         * @param backupPassword use to decrypt key store file. Backup password should between 8 and 128, otherwise will throw invalid argument exception.
+         * @param payPassword use to decrypt and generate mnemonic temporarily. Pay password should between 8 and 128, otherwise will throw invalid argument exception.
+         * @[out param] If success will return key store content in json format.
+         */
         ExportWalletWithKeystore(
             [in] IMasterWallet* masterWallet,
             [in] String backupPassword,
             [in] String payPassword,
             [out] String* keystoreContent);
 
+        /**
+         * Export mnemonic of the master wallet.
+         * @param masterWallet A pointer of master wallet interface create or imported by wallet factory object.
+         * @param payPassword use to decrypt and generate mnemonic temporarily. Pay password should between 8 and 128, otherwise will throw invalid argument exception.
+         * @[out param] If success will return the mnemonic of master wallet.
+         */
         ExportWalletWithMnemonic(
             [in] IMasterWallet *masterWallet,
             [in] String payPassword,
             [out] String* mnemonic);
 
+        /**
+         * Generate a mnemonic by random 128 entropy. We support English, Chinese, French, Italian, Japanese, and
+         *  Spanish 6 types of mnemonic currently.
+         * @param language specify mnemonic language.
+         * @[out param] a random mnemonic.
+         */
         GenerateMnemonic(
             [in] String language,
             [out] String* mnemonic);
 
+        /**
+         * Save local storage specifically. Note that the storage saving will be called automatically in destructor.
+         */
         SaveConfigs();
     }
 
