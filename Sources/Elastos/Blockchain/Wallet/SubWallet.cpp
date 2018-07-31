@@ -5,6 +5,12 @@
 #include "IdChainSubWallet.h"
 #include "SidechainSubWallet.h"
 
+
+#include <android/log.h>
+
+#define TAG "Elastos_CAR_Wallet"
+#define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG,TAG ,__VA_ARGS__)
+
 String ToStringFromJson(nlohmann::json jsonValue);
 nlohmann::json ToJosnFromString(const char* str);
 
@@ -176,9 +182,11 @@ ECode SubWallet::CreateTransaction (
     /* [out] */ String* txidJson)
 {
     VALIDATE_NOT_NULL(txidJson);
+    LOGD("FUNC=[%s]========================LINE=[%d]", __FUNCTION__, __LINE__);
     nlohmann::json result = mSpvSubWallet->CreateTransaction(fromAddress.string(), toAddress.string(), amount
             , memo.string(), remark.string());
     *txidJson = ToStringFromJson(result);
+    LOGD("FUNC=[%s]========================LINE=[%d], result=[%s]", __FUNCTION__, __LINE__, (*txidJson).string());
     return NOERROR;
 }
 
@@ -268,8 +276,35 @@ ECode SubWallet::CalculateTransactionFee(
 String ToStringFromJson(nlohmann::json jsonValue)
 {
     const char* value = jsonValue.dump().c_str();
+    LOGD("FUNC=[%s]========================LINE=[%d], len=[%d], value=[%s]", __FUNCTION__, __LINE__, strlen(value), value);
     if (!strcmp(value, "null")) {
         return String(NULL);
+    }
+
+    const Int32 len = strlen(value);
+    if (len > 800) {
+        std::string str(value);
+        Int32 tmpLen = 0;
+        Int32 pos = 0;
+        while(tmpLen >= 0) {
+            LOGD("1===FUNC=[%s]======LINE=[%d], len=[%d], value[%d]=[%s]", __FUNCTION__, __LINE__,
+                            len, pos, str.substr(pos * 800, 800).c_str());
+            pos++;
+            tmpLen = len - pos * 800;
+        }
+
+        String tmp(value);
+        tmpLen = 0;
+        pos = 0;
+        while(tmpLen >= 0) {
+            LOGD("2===FUNC=[%s]======LINE=[%d], elLen=[%d], len=[%d], value[%d]=[%s]", __FUNCTION__, __LINE__, tmp.GetLength(),
+                            len, pos, tmp.Substring(pos * 800, pos * 800 + 800).string());
+            pos++;
+            tmpLen = len - pos * 800;
+        }
+
+        String tmp2(value);
+        LOGD("FUNC=[%s]========================LINE=[%d], len=[%d], strValue=[%s]", __FUNCTION__, __LINE__, tmp2.GetLength(), tmp2.string());
     }
 
     return String(value);
