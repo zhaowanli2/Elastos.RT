@@ -2,7 +2,7 @@
 
 ## 1. Wallet构件简介
   Elastos.RT中的Wallet构件封装了elastos在github上的Elastos.ELA.SPV.Cpp仓库的功能，可以使用提供的接口创建钱包对象、创建并发送交易等。
-本说明文档仅描述Android平台开发流程，其他平台和环境的文档会随着开发进度同步进行更新。现在，您可以通过临时工程https://github.com/zhaowanli2/Elastos.WalletSDK.Android获取Wallet aar包生成的工程已经测试程序。
+本说明文档仅描述Android平台开发流程，其他平台和环境的文档会随着开发进度同步进行更新。现在，您可以通过临时工程https://github.com/zhaowanli2/Elastos.WalletSDK.Android获取Wallet aar包生成的工程和测试程序。
 
 ## 2. Wallet SDK结构
   支持Android平台开发的AAR包：包内包含钱包配置文件、Java接口和一些库文件。
