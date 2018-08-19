@@ -354,6 +354,12 @@ void SubWallet::SubWalletCallback::OnBlockSyncStopped()
     mListener->OnBlockSyncStopped();
 }
 
+void SubWallet::SubWalletCallback::OnDestroyWallet()
+{
+    if (mListener == NULL) return;
+    mListener->OnDestroyWallet();
+}
+
 ECode SubWallet::AddSubWalletCallbackNode(
     /* [in] */ SubWalletCallback* callback)
 {

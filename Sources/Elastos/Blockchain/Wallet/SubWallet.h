@@ -35,6 +35,8 @@ private:
 
         virtual void OnBlockSyncStopped();
 
+        virtual void OnDestroyWallet();
+
     public:
         AutoPtr<ISubWalletListener> mListener;
     };

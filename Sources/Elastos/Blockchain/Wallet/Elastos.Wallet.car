@@ -56,6 +56,11 @@ module
          * Callback method fired when block end synchronizing with a peer. This callback could be used to show progress.
          */
         OnBlockSyncStopped();
+
+        /**
+         * Callback method fired when subwallet was destroyed.
+         */
+        OnDestroyWallet();
     }
 
     interface ISubWallet {
