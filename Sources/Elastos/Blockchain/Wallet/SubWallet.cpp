@@ -120,7 +120,7 @@ ECode SubWallet::GetAllAddress (
 {
     VALIDATE_NOT_NULL(addressesJson);
     nlohmann::json addresses = mSpvSubWallet->GetAllAddress(start, count);
-    *addressesJson = ToStringFromJson(addresses);
+    *addressesJson = String(addresses.dump().c_str());
     return NOERROR;
 }
 
@@ -182,11 +182,9 @@ ECode SubWallet::CreateTransaction (
     /* [out] */ String* txidJson)
 {
     VALIDATE_NOT_NULL(txidJson);
-    LOGD("FUNC=[%s]========================LINE=[%d]", __FUNCTION__, __LINE__);
     nlohmann::json result = mSpvSubWallet->CreateTransaction(fromAddress.string(), toAddress.string(), amount
             , memo.string(), remark.string());
-    *txidJson = ToStringFromJson(result);
-    LOGD("FUNC=[%s]========================LINE=[%d], result=[%s]", __FUNCTION__, __LINE__, (*txidJson).string());
+    *txidJson = String(result.dump().c_str());
     return NOERROR;
 }
 
