@@ -28,6 +28,11 @@ if(NOT ("$ENV{XDK_TARGET_PLATFORM}" STREQUAL "linux"))
     )
 endif()
 
+add_library(uv SHARED IMPORTED GLOBAL )
+set_target_properties( uv PROPERTIES IMPORTED_LOCATION /home/wanli/workspace/RaspberryPi/uv/libuv.so )
+add_library(z SHARED IMPORTED GLOBAL )
+set_target_properties( z PROPERTIES IMPORTED_LOCATION /home/wanli/workspace/RaspberryPi/zlib/usr/lib/libz.so )
+
 if("$ENV{XDK_TARGET_PLATFORM}" STREQUAL "android")
     list(APPEND MY_LINK_LIBRARIES
         servicemanager

@@ -18,6 +18,7 @@ mac_env_options=(
 linux_env_options=(
     "linux_64"              "host.sh"               "64"    ""
     "linux_32"              "host.sh"               "32"    ""
+    "linux_rasp"            "raspberry.sh"          "32"    ""
     "linux_devtools_64"     "host_devtools.sh"      "64"    ""
     "linux_devtools_32"     "host_devtools.sh"      "32"    ""
 )

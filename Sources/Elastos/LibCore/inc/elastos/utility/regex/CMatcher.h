@@ -20,7 +20,7 @@
 #include "_Elastos_Utility_Regex_CMatcher.h"
 #include "elastos/core/Object.h"
 #include "elastos/core/StringBuffer.h"
-#include <unicode/regex.h>
+#include "unicode/regex.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::IStringBuffer;
