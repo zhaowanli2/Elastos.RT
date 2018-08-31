@@ -3,8 +3,6 @@
 #include "MainchainSubWallet.h"
 #include "IdChainSubWallet.h"
 
-extern String ToStringFromJson(nlohmann::json jsonValue);
-
 CAR_INTERFACE_IMPL(MasterWallet, Object, IMasterWallet)
 MasterWallet::MasterWallet(
     /* [in] */ Elastos::ElaWallet::IMasterWallet* spvMasterWallet)
@@ -161,7 +159,7 @@ ECode MasterWallet::CheckSign(
     VALIDATE_NOT_NULL(resultJson);
     nlohmann::json jsonVal = mSpvMasterWallet->CheckSign(publicKey.string(), message.string(), signature.string());
 
-    *resultJson = ToStringFromJson(jsonVal);
+    *resultJson = String(jsonVal.dump().c_str());
     return NOERROR;
 }
 

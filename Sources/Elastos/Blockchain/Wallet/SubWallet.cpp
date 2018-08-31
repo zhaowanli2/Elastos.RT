@@ -5,15 +5,7 @@
 #include "IdChainSubWallet.h"
 #include "SidechainSubWallet.h"
 
-
-#include <android/log.h>
-
-#define TAG "Elastos_CAR_Wallet"
-#define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG,TAG ,__VA_ARGS__)
-
-String ToStringFromJson(nlohmann::json jsonValue);
 nlohmann::json ToJosnFromString(const char* str);
-
 SubWallet::SubWallet(
     /* [in] */ Elastos::ElaWallet::ISubWallet* spvSubWallet)
     : mSpvSubWallet(spvSubWallet)
@@ -92,7 +84,7 @@ ECode SubWallet::GetBalanceInfo (
 {
     VALIDATE_NOT_NULL(balanceInfoJson);
     nlohmann::json result = mSpvSubWallet->GetBalanceInfo();
-    *balanceInfoJson = ToStringFromJson(result);
+    *balanceInfoJson = String(result.dump().c_str());
     return NOERROR;
 }
 
@@ -210,7 +202,7 @@ ECode SubWallet::CreateMultiSignTransaction (
     VALIDATE_NOT_NULL(transactionJson);
     nlohmann::json result = mSpvSubWallet->CreateMultiSignTransaction(fromAddress.string(), toAddress.string()
                 , amount, memo.string());
-    *transactionJson = ToStringFromJson(result);
+    *transactionJson = String(result.dump().c_str());
     return NOERROR;
 }
 
@@ -222,7 +214,7 @@ ECode SubWallet::SendRawTransaction (
 {
     VALIDATE_NOT_NULL(txidJson);
     nlohmann::json result = mSpvSubWallet->SendRawTransaction(ToJosnFromString(transactionJson.string()), fee, payPassword.string());
-    *txidJson = ToStringFromJson(result);
+    *txidJson = String(result.dump().c_str());
     return NOERROR;
 }
 
@@ -257,7 +249,7 @@ ECode SubWallet::CheckSign (
 {
     VALIDATE_NOT_NULL(resultJson);
     nlohmann::json result = mSpvSubWallet->CheckSign(address.string(), message.string(), signature.string());
-    *resultJson = ToStringFromJson(result);
+    *resultJson = String(result.dump().c_str());
     return NOERROR;
 }
 
@@ -269,43 +261,6 @@ ECode SubWallet::CalculateTransactionFee(
     VALIDATE_NOT_NULL(fee);
     *fee = mSpvSubWallet->CalculateTransactionFee(ToJosnFromString(rawTransaction.string()), feePerKb);
     return NOERROR;
-}
-
-String ToStringFromJson(nlohmann::json jsonValue)
-{
-    const char* value = jsonValue.dump().c_str();
-    LOGD("FUNC=[%s]========================LINE=[%d], len=[%d], value=[%s]", __FUNCTION__, __LINE__, strlen(value), value);
-    if (!strcmp(value, "null")) {
-        return String(NULL);
-    }
-
-    const Int32 len = strlen(value);
-    if (len > 800) {
-        std::string str(value);
-        Int32 tmpLen = 0;
-        Int32 pos = 0;
-        while(tmpLen >= 0) {
-            LOGD("1===FUNC=[%s]======LINE=[%d], len=[%d], value[%d]=[%s]", __FUNCTION__, __LINE__,
-                            len, pos, str.substr(pos * 800, 800).c_str());
-            pos++;
-            tmpLen = len - pos * 800;
-        }
-
-        String tmp(value);
-        tmpLen = 0;
-        pos = 0;
-        while(tmpLen >= 0) {
-            LOGD("2===FUNC=[%s]======LINE=[%d], elLen=[%d], len=[%d], value[%d]=[%s]", __FUNCTION__, __LINE__, tmp.GetLength(),
-                            len, pos, tmp.Substring(pos * 800, pos * 800 + 800).string());
-            pos++;
-            tmpLen = len - pos * 800;
-        }
-
-        String tmp2(value);
-        LOGD("FUNC=[%s]========================LINE=[%d], len=[%d], strValue=[%s]", __FUNCTION__, __LINE__, tmp2.GetLength(), tmp2.string());
-    }
-
-    return String(value);
 }
 
 nlohmann::json ToJosnFromString(const char* str)
@@ -329,7 +284,7 @@ void SubWallet::SubWalletCallback::OnTransactionStatusChanged(
     /* [in] */ uint32_t confirms)
 {
     if (mListener == NULL) return;
-    mListener->OnTransactionStatusChanged(String(txid.c_str()), String(status.c_str()), ToStringFromJson(desc), confirms);
+    mListener->OnTransactionStatusChanged(String(txid.c_str()), String(status.c_str()), String(desc.dump().c_str()), confirms);
 }
 
 void SubWallet::SubWalletCallback::OnBlockSyncStarted()

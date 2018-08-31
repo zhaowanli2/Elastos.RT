@@ -1,7 +1,6 @@
 
 #include "IdChainSubWallet.h"
 
-extern String ToStringFromJson(nlohmann::json jsonValue);
 extern nlohmann::json ToJosnFromString(const char* str);
 
 CAR_INTERFACE_IMPL(IdChainSubWallet, SidechainSubWallet, IIdChainSubWallet)
@@ -24,6 +23,6 @@ ECode IdChainSubWallet::CreateIdTransaction(
 
     nlohmann::json json = idchainSubWallet->CreateIdTransaction(fromAddress.string(), ToJosnFromString(payloadJson.string())
             , ToJosnFromString(programJson.string()), memo.string(), remark.string());
-    *result = ToStringFromJson(json);
+    *result = String(json.dump().c_str());
     return NOERROR;
 }
