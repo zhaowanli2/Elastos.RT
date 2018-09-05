@@ -21,7 +21,6 @@
 #include "elastos/core/CString.h"
 #include "elastos/core/StringBuilder.h"
 #include "unicode/parseerr.h"
-#include "unicode/regex.h"
 #include "elastos/core/AutoLock.h"
 
 #include "elastos/core/AutoLock.h"

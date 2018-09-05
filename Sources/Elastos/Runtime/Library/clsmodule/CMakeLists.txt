@@ -1,5 +1,5 @@
 
-include_directories(/home/wanli/workspace/RaspberryPi/zlib/usr/include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../../../ThirdParty/raspberry_lib_and_includes/zlib/usr/include)
 
 set(SOURCES
     clserr.cpp

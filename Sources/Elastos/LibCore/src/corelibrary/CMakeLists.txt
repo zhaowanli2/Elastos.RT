@@ -18,6 +18,15 @@ add_definitions(-DELASTOS_CORELIBRARY)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../inc)
 
+add_library(icuuc SHARED IMPORTED GLOBAL )
+set_target_properties( icuuc PROPERTIES IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/../../../../ThirdParty/raspberry_lib_and_includes/arm-linux-gnueabihf/libicuuc.so )
+add_library(icui18n SHARED IMPORTED GLOBAL )
+set_target_properties( icui18n PROPERTIES IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/../../../../ThirdParty/raspberry_lib_and_includes/arm-linux-gnueabihf/libicui18n.so.57.1 )
+add_library(crypto SHARED IMPORTED GLOBAL )
+set_target_properties( crypto PROPERTIES IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/../../../../ThirdParty/raspberry_lib_and_includes/arm-linux-gnueabihf/libcrypto.a )
+#add_library(rt SHARED IMPORTED GLOBAL )
+#set_target_properties( rt PROPERTIES IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/../../../../ThirdParty/raspberry_lib_and_includes/arm-linux-gnueabihf/librt.a )
+
 add_library(Elastos.CoreLibrary SHARED ${SOURCES})
 
 target_link_libraries(Elastos.CoreLibrary
@@ -30,6 +39,7 @@ target_link_libraries(Elastos.CoreLibrary
     icuuc
     crypto
     z
+    rt
 )
 
 add_dependencies(Elastos.CoreLibrary libcore_headers)

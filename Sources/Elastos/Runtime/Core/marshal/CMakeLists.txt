@@ -8,7 +8,7 @@ endif()
 if("$ENV{XDK_TARGET_PLATFORM}" STREQUAL "linux")
     xdk_add_subdirectories(
         sock_rpc
-        MarshalRPCTest
+        #MarshalRPCTest
     )
 endif()
 
