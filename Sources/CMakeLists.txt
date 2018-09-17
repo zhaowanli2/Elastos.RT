@@ -16,5 +16,6 @@ else()
         ThirdParty
         Elastos
         Sample
+        Tests
     )
 endif()
